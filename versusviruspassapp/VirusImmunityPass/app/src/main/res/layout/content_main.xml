@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_weight="1"
+        android:text="@string/content_main_title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
+
+    <LinearLayout
+        android:layout_width="308dp"
+        android:layout_height="337dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.062">
+
+        <Button
+            android:id="@+id/btnSelfTest"
+            android:onClick="openSelfTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:background="@color/colorButton"
+            android:layout_marginBottom="5dp"
+            android:text="@string/content_main_btn_self_test" />
+
+        <Button
+            android:id="@+id/btnShowStatus"
+            android:onClick="openShowStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:background="@color/colorButton"
+            android:layout_marginBottom="5dp"
+            android:text="@string/content_main_btn_show_status" />
+
+        <Button
+            android:id="@+id/btnChallengeStatus"
+            android:onClick="openChallengeStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:background="@color/colorButton"
+            android:text="@string/content_main_btn_challenge_status" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

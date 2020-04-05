@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">VirusImmunityPass</string>
+
+    <string name="action_main_test">Virus Immunity Pass</string>
+    <string name="content_main_title">Virus Immunity Pass</string>
+    <string name="content_self_test_title">Self Test</string>
+    <string name="content_show_status_title">Show Status of Immunity</string>
+    <string name="content_challenge_status_title">Challenge Status of Immunity</string>
+
+    <string name="content_main_btn_self_test">Selftest</string>
+    <string name="content_main_btn_show_status">Show Status of Immunity</string>
+    <string name="content_main_btn_challenge_status">Challenge Status of Immunity</string>
+
+</resources>
