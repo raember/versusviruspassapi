@@ -37,7 +37,7 @@ class QRCode:
             str(self.immunity_duration.days),
             self.antibody,
             str(self.test_result),
-            self.salt,
+            b64encode(self.salt.encode('latin1')).decode('latin1'),
         ]
 
     @property
@@ -45,9 +45,11 @@ class QRCode:
         return SHA256Hash.new(b64encode(self.__delimiter.join(self.signable_data).encode('latin1')))
 
     def verify_signature(self, pub_key: RsaKey) -> bool:
+        signable_hash = self.signable_hash
+        signature = b64encode(self.signature).decode('latin1')
         try:
             # noinspection PyTypeChecker
-            PKCS1_v1_5.new(pub_key).verify(self.signable_hash, self.signature)
+            PKCS1_v1_5.new(pub_key).verify(signable_hash, signature)
             return True
         except Exception as e:
             self.log.error(f"Failed to verify signature: {e}")
@@ -63,9 +65,9 @@ class QRCode:
             test_result: bool,
             priv_key: RsaKey) -> 'QRCode':
         global test_id_counter
-        test_id_counter += 1
         qr_code = QRCode()
         qr_code.test_id = test_id_counter
+        test_id_counter += 1
         qr_code.test_level = test_level
         qr_code.test_date = test_date
         qr_code.immunity_duration = immunity_duration
@@ -77,7 +79,12 @@ class QRCode:
         return qr_code
 
     def to_b64(self) -> str:
-        return b64encode(self.__delimiter.join([*self.signable_data, self.signature.decode('latin1')]).encode('utf-8')).decode('utf-8')
+        return b64encode(
+            self.__delimiter.join([
+                *self.signable_data,
+                b64encode(self.signature).decode('latin1')
+            ]).encode('latin1')
+        ).decode('latin1')
 
     @classmethod
     def from_b64(cls, b64: str) -> 'QRCode':
@@ -97,6 +104,8 @@ class QRCode:
         qr_code.immunity_duration = timedelta(days=int(immunity_duration_str))
         qr_code.antibody = antibody
         qr_code.test_result = True if test_result_str == 'True' else False
-        qr_code.salt = salt
-        qr_code.signature = signature.encode('latin1')
+        print(len(salt))
+        qr_code.salt = b64decode(salt.encode('latin1')).decode('latin1')
+        print(len(signature))
+        qr_code.signature = b64decode(signature.encode('latin1'))
         return qr_code

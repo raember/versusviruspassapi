@@ -62,6 +62,11 @@ class Block:
         block.proof = SHA256Hash((subject_id + qr_code.salt).encode()).digest()
         return block
 
+    def __str__(self):
+        return f"Immunity Test #{self.test_id}. " \
+               f"{self.antibody}: {self.test_result} " \
+               f"from {self.test_date} until {self.test_date + timedelta(days=self.immunity_duration)}"
+
 
 class BlockChain:
     log: logging.Logger
@@ -79,9 +84,6 @@ class BlockChain:
         return genesis_block
 
     def append_block(self, block: Block) -> bool:
-        if len(block.__dict__) != 8:
-            self.log.error(f"Block fields count mismatch! Block not added to chain.")
-            return False
         block.last_block = self.chain[-1].calculate_hash()
         block.mine_block(self.difficulty)
         self.chain.append(block)

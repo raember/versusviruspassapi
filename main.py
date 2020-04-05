@@ -31,5 +31,13 @@ if __name__ == '__main__':
         test_result=True,
         priv_key=issuer1,
     ), 'X001'))
+    register_block(QRCode.create_qr_code(
+        test_level=2,
+        test_date=datetime.now(),
+        immunity_duration=timedelta(days=128),
+        antibody='Sars-COVID-19',
+        test_result=True,
+        priv_key=issuer2,
+    ), 'X002')
     api = Api(app=app, block_chain=block_chain_mock, pub_keys=pub_keys_mock)
     app.run(debug=True)

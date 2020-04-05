@@ -29,6 +29,7 @@ class ImmunityCertificate(Resource):
         parser.add_argument('subject_id')
         args = parser.parse_args()
         qr_code = QRCode.from_b64(unquote_plus(args['qr_code_b64']))
+        print(f"Submit: Test #{qr_code.test_id} for {args['subject_id']}")
         # Please look away for a few lines. May the gods avert their eyes and spare this sinful soul of mine.
         global pub_keys
         verified = False
@@ -74,6 +75,7 @@ class ImmunityCertificate(Resource):
         parser.add_argument('subject_id')
         args = parser.parse_args()
         qr_code = QRCode.from_b64(unquote_plus(args['qr_code_b64']))
+        print(f"Challenge: Test #{qr_code.test_id} for {args['subject_id']}")
         # Please look away for a few lines. May the gods avert their eyes and spare this sinful soul of mine.
         global pub_keys
         verified = False
@@ -98,12 +100,16 @@ class ImmunityCertificate(Resource):
                 'msg': "No matching block found"
             }, 404
         challengee_block = Block.create(qr_code, args['subject_id'])
-        if challengee_block.proof == block.proof \
-                and block.test_date + timedelta(days=block.immunity_duration) < datetime.now():
+        if challengee_block.proof == block.proof:
+            if block.test_date + timedelta(days=block.immunity_duration) > datetime.now():
+                return {
+                    'success': True,
+                    'msg': "Challengee data verified"
+                }, 200
             return {
-                'success': True,
-                'msg': "Challengee data verified"
-            }, 200
+                'success': False,
+                'msg': "Challengee data could be verified but is expired"
+            }, 406
         return {
             'success': False,
             'msg': "Challengee data could not be verified or it has expired"
