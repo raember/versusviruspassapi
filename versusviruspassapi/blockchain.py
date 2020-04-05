@@ -40,10 +40,10 @@ class Block:
         block = Block()
         block.test_id = qr_code.test_id
         block.test_date = qr_code.test_date
-        block.expiration_date = qr_code.expiration_date
+        block.expiration_date = qr_code.immunity_duration
         block.antibody_id = qr_code.antibody_id
         block.signature = qr_code.signature
-        block.proof = subject_id
+        block.proof = sha256(subject_id + qr_code.salt).hexdigest()
         return block
 
 
