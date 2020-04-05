@@ -1,3 +1,4 @@
 [submodule "versusviruspassapp"]
 	path = versusviruspassapp
-	url = C:/Users/lbenno/git/versusvirus/versusviruspassapp
+	url = https://github.com/aktion-hip/versusviruspassapp.git
+	ignore = all
