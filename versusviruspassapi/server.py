@@ -42,15 +42,15 @@ class ImmunityCertificate(Resource):
                        'success': False,
                        'msg': "Signature could not be verified"
                    }, 406
-        block = Block.create(qr_code, args['subject_id'])
+        new_block = Block.create(qr_code, args['subject_id'])
         global block_chain
         for block in block_chain.chain:
-            if block.test_id == qr_code.test_id:
+            if block.test_id == new_block.test_id:
                 return {
                     'success': False,
                     'msg': "Test has already been submitted before"
                 }, 406
-        if block_chain.append_block(block):
+        if block_chain.append_block(new_block):
             return {
                 'success': True,
                 'msg': "Block appended to the blockchain"
@@ -112,7 +112,7 @@ class ImmunityCertificate(Resource):
             }, 406
         return {
             'success': False,
-            'msg': "Challengee data could not be verified or it has expired"
+            'msg': "Challengee data could not be verified"
         }, 406
 
 
