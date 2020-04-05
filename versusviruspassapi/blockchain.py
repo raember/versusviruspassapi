@@ -1,49 +1,65 @@
 import json
 import logging
 from _sha256 import sha256
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
+
+from Crypto.Hash.SHA256 import SHA256Hash
 
 from versusviruspassapi.qr_code import QRCode
 
 
 class Block:
-    last_block: bytes
+    last_block: bytes = b''
     test_id: int = 0
+    test_level: int = 1
     test_date: datetime = datetime(1, 1, 1)
-    expiration_date: datetime = datetime(1, 1, 1)
-    antibody_id: int = 0
-    signature: str = ''
-    proof: bytes
+    immunity_duration: int = 0
+    antibody: str = ''
+    test_result: bool = False
+    signature: bytes = b''
+    proof: bytes = b''
     nonce: int = 0
 
-    def __hash__(self) -> bytes:
-        # stomach = sha256()
-        # stomach.update(bytes(self.test_id))
-        # stomach.update(self.test_date.strftime('%d.%m.%Y').encode('utf8'))
-        # stomach.update(self.expiration_date.strftime('%d.%m.%Y').encode('utf8'))
-        # stomach.update(bytes(self.antibody_id))
-        # stomach.update(bytes(self.nonce))
-        return sha256(json.dumps(self.__dict__, sort_keys=True).encode()).hexdigest()
+    @property
+    def hashable_fields(self) -> str:
+        return "|".join([
+            self.last_block.decode('latin1'),
+            str(self.test_id),
+            str(self.test_level),
+            self.test_date.strftime('%d.%m.%Y'),
+            str(self.immunity_duration),
+            self.antibody,
+            str(self.test_result),
+            self.signature.decode('latin1'),
+            self.proof.decode('latin1'),
+            str(self.nonce),
+        ])
+
+    def calculate_hash(self) -> bytes:
+        return SHA256Hash(self.hashable_fields.encode('latin1')).digest()
 
     def mine_block(self, difficulty: int):
         """
         Performs the proof of work by finding a hash that has a set number of leading zeros by adjusting the nonce
 
-        :param difficulty: The amount of leading 0 bytes the hash needs to have until the block is considered mined.
+        :param difficulty: The amount of leading zeros the hash needs to have until the block is considered mined.
         """
-        while not self.__hash__().startswith(b'0' * difficulty):
+        self.nonce = 0
+        while not self.calculate_hash().startswith(b'0' * difficulty):
             self.nonce += 1
 
     @classmethod
-    def from_qr_code_and_subject_id(cls, qr_code: QRCode, subject_id: str) -> 'Block':
+    def create(cls, qr_code: QRCode, subject_id: str) -> 'Block':
         block = Block()
         block.test_id = qr_code.test_id
+        block.test_level = qr_code.test_level
         block.test_date = qr_code.test_date
-        block.expiration_date = qr_code.immunity_duration
-        block.antibody_id = qr_code.antibody_id
+        block.immunity_duration = qr_code.immunity_duration.days
+        block.antibody = qr_code.antibody
+        block.test_result = qr_code.test_result
         block.signature = qr_code.signature
-        block.proof = sha256(subject_id + qr_code.salt).hexdigest()
+        block.proof = SHA256Hash((subject_id + qr_code.salt).encode()).digest()
         return block
 
 
@@ -63,10 +79,10 @@ class BlockChain:
         return genesis_block
 
     def append_block(self, block: Block) -> bool:
-        if len(block.__dict__) != 6:
+        if len(block.__dict__) != 8:
             self.log.error(f"Block fields count mismatch! Block not added to chain.")
             return False
-        block.last_block = hash(self.chain[-1])
+        block.last_block = self.chain[-1].calculate_hash()
         block.mine_block(self.difficulty)
         self.chain.append(block)
         return True
