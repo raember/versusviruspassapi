@@ -88,13 +88,6 @@ class QRCode:
 
     @classmethod
     def from_b64(cls, b64: str) -> 'QRCode':
-        print(len(b64))
-        print(len(b64) % 4)
-        print(b64)
-        b1: bytes = b64decode(b64)
-        s2 = b1.decode('latin1')
-        a3 = s2.split(cls.__delimiter, maxsplit=7)
-        t4 = tuple(a3)
         test_id_str, test_level_str, test_date_str, immunity_duration_str, antibody, test_result_str, salt, signature = \
             tuple(b64decode(b64).decode('latin1').split(cls.__delimiter, maxsplit=7))
         qr_code = QRCode()
@@ -104,8 +97,6 @@ class QRCode:
         qr_code.immunity_duration = timedelta(days=int(immunity_duration_str))
         qr_code.antibody = antibody
         qr_code.test_result = True if test_result_str == 'True' else False
-        print(len(salt))
         qr_code.salt = b64decode(salt.encode('latin1')).decode('latin1')
-        print(len(signature))
         qr_code.signature = b64decode(signature.encode('latin1'))
         return qr_code
