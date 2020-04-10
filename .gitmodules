@@ -2,3 +2,6 @@
 	path = versusviruspassapp
 	url = https://github.com/aktion-hip/versusviruspassapp.git
 	ignore = all
+[submodule "VersusAppVerification"]
+	path = VersusAppVerification
+	url = https://github.com/servrcube/VersusAppVerification.git

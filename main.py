@@ -15,10 +15,6 @@ def register_block(method: str, qr_code: QRCode, subject: str) -> Block:
     print(f" Subject: {subject}")
     return Block.create(qr_code=qr_code, subject_id=subject)
 
-def zeros(_):
-    while True:
-        yield 0
-
 
 if __name__ == '__main__':
     app = Flask('server')
